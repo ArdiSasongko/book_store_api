@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CATREGORY {
+  ACTION
+  DRAMA
+  EDUCATION
+  FICTION
+}
+
+enum UserType {
+  ADMIN
+  USER
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  password String
+  userType UserType
+  book Buyer[]
+}
+
+model Publisher {
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  phone String
+  location String
+  books Book[]
+}
+
+model Author {
+  id Int @id @default(autoincrement())
+  name String
+  pen_name String
+  email String @unique
+  books Book[]
+}
+
+model Book {
+  id Int @id @default(autoincrement())
+  title String
+  description String
+  price Int
+  amount Int
+  publish_date DateTime @default(now())
+  update_date DateTime @updatedAt
+  id_publisher Int
+  publisher Publisher @relation(fields: [id_publisher], references: [id])
+  id_author Int
+  author Author @relation(fields: [id_author], references: [id])
+  buyer Buyer[]
+}
+
+model Buyer {
+  id Int @id @default(autoincrement())
+  id_user Int
+  user User @relation(fields: [id_user], references: [id])
+  id_book Int
+  book Book @relation(fields: [id_book], references: [id])
+  buy_date DateTime @default(now())
+  amount Int
+  total_price Int
+}
