@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum CATREGORY {
+enum CATEGORY {
   ACTION
   DRAMA
   EDUCATION
@@ -50,6 +50,7 @@ model Author {
 
 model Book {
   id Int @id @default(autoincrement())
+  category CATEGORY
   title String
   description String
   price Int
