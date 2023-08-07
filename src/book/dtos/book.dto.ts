@@ -117,3 +117,10 @@ export class updateBookDto {
   @IsNotEmpty()
   id_author: number;
 }
+
+export class buyBookDto {
+  @IsNotEmpty()
+  @IsNumber()
+  @IsPositive()
+  amount: number;
+}

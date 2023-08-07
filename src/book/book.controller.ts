@@ -10,9 +10,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { BookService } from './book.service';
-import { CATEGORY } from '@prisma/client';
-import { ResponseBookDto, addBookDto, updateBookDto } from './dtos/book.dto';
+import { CATEGORY, UserType } from '@prisma/client';
+import {
+  ResponseBookDto,
+  addBookDto,
+  buyBookDto,
+  updateBookDto,
+} from './dtos/book.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Roles } from 'src/decorators/roles.decorator';
+import { User, UserInfo } from 'src/decorators/user.decpratot';
 
 @Controller('book')
 export class BookController {
@@ -50,6 +57,7 @@ export class BookController {
     return this.bookService.getBook(id);
   }
 
+  @Roles(UserType.ADMIN)
   @Post()
   async addBook(@Body() body: addBookDto) {
     const publisher = await this.prismaService.publisher.findUnique({
@@ -75,13 +83,31 @@ export class BookController {
     return this.bookService.addBook(body);
   }
 
+  @Roles(UserType.ADMIN)
   @Put(':id')
   updateBook(@Body() body: updateBookDto, @Param('id') id: number) {
     return this.bookService.updateBook(id, body);
   }
 
+  @Roles(UserType.ADMIN)
   @Delete(':id')
   deleteBook(@Param('id') id: number) {
     return this.bookService.deleteBook(id);
+  }
+
+  @Roles(UserType.ADMIN, UserType.USER)
+  @Post(':id/buy')
+  buyBook(
+    @Body() amount: buyBookDto,
+    @Param('id') id: number,
+    @User() user: UserInfo,
+  ) {
+    return this.bookService.buyBook(id, user.id, amount);
+  }
+
+  @Roles(UserType.ADMIN, UserType.USER)
+  @Get('user/history')
+  getHistory(@User() user: UserInfo) {
+    return this.bookService.getHistory(user.id);
   }
 }
