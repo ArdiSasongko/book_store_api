@@ -32,6 +32,10 @@ interface updateBook {
   id_author?: number;
 }
 
+interface buyBook {
+  amount: number;
+}
+
 const BookSelect = {
   id: true,
   category: true,
@@ -157,5 +161,71 @@ export class BookService {
     });
 
     throw new HttpException(`Success Delete ${findBook.title}`, 202);
+  }
+
+  async buyBook(id: number, user_id: number, { amount }: buyBook) {
+    const findBook = await this.prismaService.book.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!findBook) {
+      throw new NotFoundException('Book Not Found');
+    }
+
+    if (amount > findBook.amount) {
+      throw new HttpException(
+        `Jumlah tidak mencukupi, sisa buku ${findBook.amount}`,
+        400,
+      );
+    }
+
+    const total_price = amount * findBook.price;
+    const amount_book = findBook.amount - amount;
+
+    const book = await this.prismaService.book.update({
+      where: {
+        id,
+      },
+      data: { amount: amount_book },
+    });
+
+    const newBuyer = await this.prismaService.buyer.create({
+      data: {
+        id_book: id,
+        id_user: user_id,
+        amount: amount,
+        total_price: total_price,
+      },
+    });
+
+    throw new HttpException(`Success buy ${findBook.title}`, 200);
+  }
+
+  async getHistory(user_id: number) {
+    const history = await this.prismaService.buyer.findMany({
+      select: {
+        id: true,
+        buy_date: true,
+        amount: true,
+        total_price: true,
+        book: {
+          select: {
+            title: true,
+            description: true,
+          },
+        },
+      },
+      where: {
+        id_user: user_id,
+      },
+    });
+
+    if (history.length === 0) {
+      throw new NotFoundException('No transaction history found.');
+    }
+
+    return history;
   }
 }
