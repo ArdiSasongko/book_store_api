@@ -21,7 +21,7 @@ model User {
 
 model Publisher {
   id Int @id @default(autoincrement())
-  name String
+  name String @unique
   email String @unique
   phone String
   location String
@@ -30,7 +30,7 @@ model Publisher {
 
 model Author {
   id Int @id @default(autoincrement())
-  name String
+  name String @unique
   pen_name String
   email String @unique
   books Book[]
