@@ -15,10 +15,14 @@ export class ResponseAuthorDto {
   email: string;
 
   @Exclude()
-  books: string;
+  book: string;
 
   @Expose({ name: 'List Books' })
   listBook() {
-    return this.books;
+    return this.book;
+  }
+
+  constructor(partial: Partial<ResponseAuthorDto>) {
+    Object.assign(this, partial);
   }
 }
