@@ -8,9 +8,10 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { DataInterceptor } from './interceptor/data.interceptor';
 import { AuthGuard } from './guards/auth.guard';
 import { PublisherModule } from './publisher/publisher.module';
+import { AuthorModule } from './author/author.module';
 
 @Module({
-  imports: [PrismaModule, UserModule, BookModule, PublisherModule],
+  imports: [PrismaModule, UserModule, BookModule, PublisherModule, AuthorModule],
   controllers: [AppController],
   providers: [
     AppService,

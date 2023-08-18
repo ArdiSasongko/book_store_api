@@ -69,7 +69,7 @@ export class AuthService {
     return this.generateJWT(user.id, user.name);
   }
 
-  private generateJWT(id: number, name: string) {
+  private async generateJWT(id: number, name: string) {
     return jwt.sign(
       {
         id,
